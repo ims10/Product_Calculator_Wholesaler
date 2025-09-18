@@ -12,17 +12,21 @@
     *{box-sizing:border-box}
     body{font-family:Inter,system-ui,Segoe UI,Helvetica,Arial; margin:0; background:linear-gradient(180deg,#071029 0%, #07182a 60%); color:#e6f0f6; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:28px}
     .wrap{width:100%; max-width:980px}
-    header{display:flex; gap:16px; align-items:center; margin-bottom:18px; justify-content:space-between}
-    .logo{width:64px; height:64px; border-radius:12px; background:linear-gradient(135deg,var(--accent),#1e293b); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:20px; box-shadow:0 6px 20px rgba(2,6,23,0.6)}
+    header{display:flex; gap:16px; align-items:center; margin-bottom:18px}
+    .logo{width:64px; height:64px; border-radius:12px; background:linear-gradient(135deg,var(--accent),#1e293b); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:20px; box-shadow:0 6px 20px rgba(2,6,23,0.6); overflow:hidden}
+    .logo img{width:100%; height:100%; object-fit:cover; border-radius:12px}
     h1{margin:0; font-size:20px}
     p.lead{margin:4px 0 0; color:var(--muted); font-size:13px}
 
-    select{padding:8px 10px; border-radius:8px; background:var(--glass); border:1px solid rgba(255,255,255,0.1); color:#e6f0f6;}
+    .grid{display:grid; grid-template-columns:1fr 380px; gap:18px}
+    @media (max-width:880px){.grid{grid-template-columns:1fr;}}
 
     .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:12px; padding:18px; box-shadow:0 6px 30px rgba(2,6,23,0.6);}
+
     label{display:block; font-size:13px; color:var(--muted); margin-bottom:6px}
     .input{width:100%; padding:10px 12px; border-radius:8px; background:var(--glass); border:1px solid rgba(255,255,255,0.03); color:inherit; font-size:15px}
     .badge{background:rgba(255,255,255,0.03); padding:6px 8px; border-radius:999px; font-size:13px}
+
     .range-wrap{display:flex; gap:12px; align-items:center}
     input[type=range]{accent-color:var(--accent); width:100%}
 
@@ -35,6 +39,158 @@
     .btn{padding:10px 12px; border-radius:10px; border:0; cursor:pointer; font-weight:600;}
     .btn-primary{background:linear-gradient(90deg,var(--accent),#7dd3fc); color:#021124}
     .btn-ghost{background:transparent; border:1px solid rgba(255,255,255,0.04); color:var(--muted)}
+
+    footer{text-align:center; color:var(--muted); font-size:13px; margin-top:20px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo"><img src="logo.png" alt="Logo"></div>
+      <div>
+        <h1 id="title">घाऊक विक्रेता किंमत कॅल्क्युलेटर</h1>
+        <p class="lead" id="subtitle">सवलत, मोफत बाटल्या आणि नफा सहज पाहण्यासाठी सोपा व मोबाईल-फ्रेंडली कॅल्क्युलेटर.</p>
+      </div>
+    </header>
+
+    <div style="margin-bottom:20px">
+      <label for="langSelect">भाषा निवडा (Select Language)</label>
+      <select id="langSelect" class="input">
+        <option value="mr">मराठी</option>
+        <option value="hi">हिंदी</option>
+        <option value="en">English</option>
+      </select>
+    </div>
+
+    <div class="card">
+      <label id="lblBuy">खरेदी किंमत (प्रति बाटली)</label>
+      <input id="buyPrice" class="input" type="number" value="0">
+
+      <label id="lblMrp">एमआरपी किंमत (प्रति बाटली)</label>
+      <input id="mrp" class="input" type="number" value="0">
+
+      <label id="lblDiscount">सवलत (%)</label>
+      <div class="range-wrap">
+        <input id="discount" type="range" min="0" max="90" value="0">
+        <div class="badge" id="discountLabel">0%</div>
+      </div>
+
+      <label id="lblFree">मोफत बाटल्या (प्रति ऑर्डर)</label>
+      <input id="freeBottles" class="input" type="number" value="0">
+
+      <label id="lblQty">ग्राहक खरेदी प्रमाण (पेड बाटल्या)</label>
+      <input id="quantity" class="input" type="number" value="10">
+
+      <div style="margin-top:16px; display:flex; gap:10px">
+        <button id="calcBtn" class="btn btn-primary">हिशोब करा</button>
+        <button id="resetBtn" class="btn btn-ghost">रीसेट</button>
+      </div>
+
+      <div class="results">
+        <div class="stat"><h3 id="r1">सवलतीनंतर विक्री किंमत</h3><div class="value" id="discPrice">₹0.00</div></div>
+        <div class="stat"><h3 id="r2">एकूण दिलेल्या बाटल्या</h3><div class="value" id="totalBottles">0</div></div>
+        <div class="stat"><h3 id="r3">एकूण महसूल (पेड)</h3><div class="value" id="revenue">₹0.00</div></div>
+        <div class="stat"><h3 id="r4">एकूण खर्च (मोफतसह)</h3><div class="value" id="cost">₹0.00</div></div>
+        <div class="stat"><h3 id="r5">नफा</h3><div class="value" id="profit">₹0.00</div></div>
+        <div class="stat"><h3 id="r6">प्रति पेड बाटली नफा</h3><div class="value" id="profitPerPaid">₹0.00</div></div>
+        <div class="stat"><h3 id="r7">प्रति दिलेली बाटली नफा</h3><div class="value" id="profitPerDelivered">₹0.00</div></div>
+        <div class="stat"><h3 id="r8">प्रति दिलेली बाटली किंमत</h3><div class="value" id="effPricePerDelivered">₹0.00</div></div>
+        <div class="stat"><h3 id="r9">आरओआय (नफा/खर्च)</h3><div class="value" id="roi">0%</div></div>
+      </div>
+    </div>
+
+    <footer>© Product Calculator Developed By ims</footer>
+  </div>
+
+  <script>
+    const translations = {
+      mr: {
+        title:'घाऊक विक्रेता किंमत कॅल्क्युलेटर', subtitle:'सवलत, मोफत बाटल्या आणि नफा सहज पाहण्यासाठी सोपा व मोबाईल-फ्रेंडली कॅल्क्युलेटर.',
+        buy:'खरेदी किंमत (प्रति बाटली)', mrp:'एमआरपी किंमत (प्रति बाटली)', discount:'सवलत (%)', free:'मोफत बाटल्या (प्रति ऑर्डर)', qty:'ग्राहक खरेदी प्रमाण (पेड बाटल्या)',
+        r1:'सवलतीनंतर विक्री किंमत', r2:'एकूण दिलेल्या बाटल्या', r3:'एकूण महसूल (पेड)', r4:'एकूण खर्च (मोफतसह)', r5:'नफा', r6:'प्रति पेड बाटली नफा', r7:'प्रति दिलेली बाटली नफा', r8:'प्रति दिलेली बाटली किंमत', r9:'आरओआय (नफा/खर्च)'
+      },
+      hi: {
+        title:'थोक व्यापारी मूल्य कैलकुलेटर', subtitle:'छूट, मुफ्त बोतलें और लाभ आसानी से देखने के लिए सरल व मोबाइल-फ्रेंडली कैलकुलेटर।',
+        buy:'खरीद मूल्य (प्रति बोतल)', mrp:'एमआरपी मूल्य (प्रति बोतल)', discount:'छूट (%)', free:'मुफ्त बोतलें (प्रति ऑर्डर)', qty:'ग्राहक खरीद मात्रा (भुगतान बोतलें)',
+        r1:'छूट के बाद बिक्री मूल्य', r2:'कुल दी गई बोतलें', r3:'कुल राजस्व (भुगतान)', r4:'कुल लागत (मुफ्त सहित)', r5:'लाभ', r6:'प्रति भुगतान बोतल लाभ', r7:'प्रति दी गई बोतल लाभ', r8:'प्रति दी गई बोतल मूल्य', r9:'आरओआई (लाभ/लागत)'
+      },
+      en: {
+        title:'Wholesaler Pricing Calculator', subtitle:'Simple & mobile-friendly calculator to see discount, free bottles and profit easily.',
+        buy:'Buy Price (per bottle)', mrp:'MRP Price (per bottle)', discount:'Discount (%)', free:'Free Bottles (per order)', qty:'Customer Purchase Qty (Paid bottles)',
+        r1:'Selling Price After Discount', r2:'Total Bottles Delivered', r3:'Total Revenue (Paid)', r4:'Total Cost (Including Free)', r5:'Profit', r6:'Profit per Paid Bottle', r7:'Profit per Delivered Bottle', r8:'Effective Price per Delivered Bottle', r9:'ROI (Profit/Cost)'
+      }
+    };
+
+    const ids=['title','subtitle','lblBuy','lblMrp','lblDiscount','lblFree','lblQty','r1','r2','r3','r4','r5','r6','r7','r8','r9'];
+    const map={lblBuy:'buy',lblMrp:'mrp',lblDiscount:'discount',lblFree:'free',lblQty:'qty'};
+
+    document.getElementById('langSelect').addEventListener('change', e=>{
+      const t=translations[e.target.value];
+      document.getElementById('title').textContent=t.title;
+      document.getElementById('subtitle').textContent=t.subtitle;
+      for(const id in map){document.getElementById(id).textContent=t[map[id]];}
+      for(let i=1;i<=9;i++){document.getElementById('r'+i).textContent=t['r'+i];}
+    });
+
+    const fmt = v => '₹' + Number(v).toLocaleString('en-IN',{minimumFractionDigits:2, maximumFractionDigits:2});
+    const buyPrice=document.getElementById('buyPrice');
+    const mrp=document.getElementById('mrp');
+    const discount=document.getElementById('discount');
+    const discountLabel=document.getElementById('discountLabel');
+    const freeBottles=document.getElementById('freeBottles');
+    const quantity=document.getElementById('quantity');
+
+    const discPriceEl=document.getElementById('discPrice');
+    const totalBottlesEl=document.getElementById('totalBottles');
+    const revenueEl=document.getElementById('revenue');
+    const costEl=document.getElementById('cost');
+    const profitEl=document.getElementById('profit');
+    const profitPerPaidEl=document.getElementById('profitPerPaid');
+    const profitPerDeliveredEl=document.getElementById('profitPerDelivered');
+    const effPricePerDeliveredEl=document.getElementById('effPricePerDelivered');
+    const roiEl=document.getElementById('roi');
+
+    function calculate(){
+      const b=parseFloat(buyPrice.value)||0;
+      const m=parseFloat(mrp.value)||0;
+      const d=parseFloat(discount.value)||0;
+      const f=parseInt(freeBottles.value)||0;
+      const q=parseInt(quantity.value)||0;
+
+      const discounted=m*(1-d/100);
+      const revenue=discounted*q;
+      const totalDelivered=q+f;
+      const cost=b*totalDelivered;
+      const profit=revenue-cost;
+      const profitPerPaid=q>0?profit/q:0;
+      const profitPerDelivered=totalDelivered>0?profit/totalDelivered:0;
+      const effPricePerDelivered=totalDelivered>0?revenue/totalDelivered:0;
+      const roi=cost!==0?(profit/cost)*100:0;
+
+      discountLabel.textContent=d+'%';
+      discPriceEl.textContent=fmt(discounted);
+      totalBottlesEl.textContent=totalDelivered;
+      revenueEl.textContent=fmt(revenue);
+      costEl.textContent=fmt(cost);
+      profitEl.textContent=fmt(profit);
+      profitPerPaidEl.textContent=fmt(profitPerPaid);
+      profitPerDeliveredEl.textContent=fmt(profitPerDelivered);
+      effPricePerDeliveredEl.textContent=fmt(effPricePerDelivered);
+      roiEl.textContent=(isFinite(roi)?roi.toFixed(2):'0.00')+'%';
+
+      profitEl.style.color=profit>=0?'var(--success)':'#f43f5e';
+      roiEl.style.color=profit>=0?'var(--success)':'#f43f5e';
+    }
+
+    [buyPrice,mrp,discount,freeBottles,quantity].forEach(el=>el.addEventListener('input',calculate));
+    document.getElementById('calcBtn').addEventListener('click',calculate);
+    document.getElementById('resetBtn').addEventListener('click',()=>{
+      buyPrice.value=200;mrp.value=350;discount.value=10;freeBottles.value=0;quantity.value=10;calculate();
+    });
+    calculate();
+  </script>
+</body>
+</html>    .btn-ghost{background:transparent; border:1px solid rgba(255,255,255,0.04); color:var(--muted)}
 
     footer{text-align:center; color:var(--muted); font-size:13px; margin-top:20px}
   </style>
